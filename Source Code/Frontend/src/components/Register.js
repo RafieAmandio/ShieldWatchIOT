@@ -56,7 +56,7 @@ const Register = () => {
                                 </label>
                             </div>
                             <div className="form-control mt-6">
-                                <button className="btn btn-primary" onClick={handleRegister}>Register</button>
+                                <button className="btn bg-white text-black" onClick={handleRegister}>Register</button>
                             </div>
                         </form>
                     </div>

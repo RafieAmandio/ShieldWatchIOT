@@ -34,7 +34,6 @@ const AddDevice = () => {
                 onAddDevice={handleAddDevice}
                 className="transition duration-200 ease-in-out transform scale-100"
             >
-                {/* Modal content goes here */}
             </AddDeviceModal>
         </div>
     );

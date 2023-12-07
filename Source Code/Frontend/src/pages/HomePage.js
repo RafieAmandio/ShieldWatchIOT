@@ -9,13 +9,19 @@ const HomePage = () => {
     const [lightIntensityValue, setLightIntensityValue] = useState(0);
 
     useEffect(() => {
-        {/*const client = mqtt.connect('broker.mqttdashboard.com');
+        const client = mqtt.connect('mqtt://broker.mqttdashboard.com');
 
         client.on('connect', () => {
-            client.subscribe('ShieldWatchIOT');
+            console.log('Connected to MQTT broker');
+            client.subscribe('ShieldWatchIOT', function (err) {
+                if (!err) {
+                    client.publish('ShieldWatchIOT', 'Hello from ShieldWatchIOT');
+                }
+            });
         });
 
         client.on('message', (topic, message) => {
+            // Assuming data format: { pir: boolean, temperature: number, lightIntensity: number }
             const data = JSON.parse(message.toString());
             setPirValue(data.pir);
             setTemperatureValue(data.temperature);
@@ -25,7 +31,7 @@ const HomePage = () => {
         // Cleanup the MQTT client on component unmount
         return () => {
             client.end();
-        };*/}
+        };
     }, []);
 
     const stats = [
@@ -37,7 +43,7 @@ const HomePage = () => {
     return (
         <div>
             <div className='h-screen'>
-                <Navbar/>
+                <Navbar />
                 <div className='bg-white flex items-end justify-end px-52'>
                     <AddDevice />
                 </div>
@@ -53,15 +59,14 @@ const HomePage = () => {
                                 </div>
                             ))}
                         </dl>
-                    <div className="card w-1/2 bg-white items-center mx-auto my-12">
-                        <div className="card-body">
-                            <h2 className="card-title text-5xl text-black">Camera</h2>
+                        <div className="card w-1/2 bg-white items-center mx-auto my-12">
+                            <div className="card-body">
+                                <h2 className="card-title text-5xl text-black">Camera</h2>
+                            </div>
+                            <figure><img src="https://zonacctv.com/wp-content/uploads/2017/07/IMG-20170520-WA0036.jpg" alt="Camera" /></figure>
                         </div>
-                        <figure><img src="https://zonacctv.com/wp-content/uploads/2017/07/IMG-20170520-WA0036.jpg" alt="Camera" /></figure>
-                    </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
