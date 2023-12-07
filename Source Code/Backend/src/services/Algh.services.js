@@ -27,15 +27,6 @@ async function detectAndCompareFaces(basePhotoPath, intruderPhotoPath) {
     .withFaceLandmarks()
     .withFaceDescriptor();
 
-  if (basePhotoDetection) {
-    const { x, y, width, height } = basePhotoDetection.detection.box;
-  }
-
-  if (intruderPhotoDetection) {
-    const { x, y, width, height } = intruderPhotoDetection.detection.box;
-    await renderFace(intruderPhotoImage, x, y, width, height);
-  }
-
   if (basePhotoDetection && intruderPhotoDetection) {
     const distance = faceapi.euclideanDistance(
       basePhotoDetection.descriptor,
@@ -97,7 +88,6 @@ function convertBase64ToImage(clientId, base64String) {
     // Convert base64 to binary
     const imageBuffer = Buffer.from(base64String, "base64");
 
-
     fs.writeFileSync(filePath, imageBuffer, "binary");
 
     console.log(`Image saved to ${filePath}`);
@@ -116,7 +106,7 @@ exports.handleJsonMessage = async function handleJsonMessage(jsonMessage) {
 
       // Convert the received base64 data to an image
       const FileImage = convertBase64ToImage(clientId, imageData);
-      detectAndCompareFaces(FileImage, "./brad-pitt.jpg");
+      const dist = await detectAndCompareFaces(FileImage, "./brad-pitt.jpg");
     } else {
       console.error(
         "Invalid JSON message format. Missing clientId or payload."

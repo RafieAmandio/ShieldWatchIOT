@@ -1,45 +1,59 @@
-const admin = require("../config/firebase");
 const bcrypt = require("bcrypt");
+const { User } = require("../models/user.model");
 
+exports.register = async (body) => {
+  console.log(body);
+  const userData = body;
 
-const db = admin.firestore();
-const usersCollection = db.collection("users");
-
-exports.createUser = async (req, res) => {
-  const userData = req.body;
-
-  // Add validation for the required fields
-  if (
-    !userData.Name ||
-    !userData.DateOfBirth ||
-    !userData.Address ||
-    !userData.Phone
-  ) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
-  // Add validation for data types
-  if (
-    typeof userData.Name !== "string" ||
-    !Number.isNaN(Date.parse(userData.DateOfBirth)) || // Check if DateOfBirth is a valid datetime
-    typeof userData.Address !== "string" ||
-    typeof userData.Phone !== "string"
-  ) {
-    return res.status(400).json({ error: "Invalid data types" });
+  if (!userData.username || !userData.email || !userData.password) {
+    throw new Error("Missing required fields");
   }
 
   try {
-    // Hash the password before storing it
-    const saltRounds = 10; // Adjust the number of salt rounds as needed
-    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-    userData.password = hashedPassword;
+    userData.password = await bcrypt.hash(userData.password, 10);
 
-    const docRef = await usersCollection.add(userData);
-    return res.status(201).json({ id: docRef.id });
+    const result = new User({
+      username: userData.username,
+      email: userData.email,
+      password: userData.password,
+    });
+    await result.save();
+
+    return { message: "Sucesss Creating New User!", result: result };
   } catch (error) {
     console.error("Error creating user:", error);
-    return res.status(500).json({ error: "Could not create user" });
+    throw new Error("Could not create user");
   }
 };
 
+exports.login = async (body) => {
+  try {
+    const { email, password } = body;
 
+    // Check if email and password are provided
+    if (!email || !password) {
+      throw new Error("Email and password are required");
+    }
+    const user = await User.findOne({ email });
+
+    // Check if the user exists
+    if (!user) {
+      throw new Error("Invalid email or password");
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      throw new Error("Invalid email or password");
+    }
+
+    // Passwords match, user is authenticated
+    // Here you can generate a JWT token and send it back to the client
+    // For simplicity, I'm just sending a success message for now
+    return { message: "Login successful", result: user };
+  } catch (error) {
+    console.error("Error during login:", error);
+    throw new Error("Internal Server Error");
+  }
+};
