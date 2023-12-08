@@ -19,11 +19,11 @@ const AddDeviceModal = ({ isOpen, onRequestClose }) => {
     const { register, handleSubmit } = useForm();
     const [selectedDeviceType, setSelectedDeviceType] = useState('');
 
-    const onSubmit = async (data) => {
+    const addDevice = async (data) => {
         const deviceData = { ...data, deviceType: selectedDeviceType };
 
         try {
-            const response = await fetch('YOUR_BACKEND_ENDPOINT', {
+            const response = await fetch('http://localhost:3000/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const AddDeviceModal = ({ isOpen, onRequestClose }) => {
         <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles}>
             <div className="bg-white p-6 flex-row rounded-lg">
                 <h2 className="text-xl text-black text-center font-bold mb-4">Add Device</h2>
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form addDevice={handleSubmit(addDevice)}>
                     <div className="mb-4">
                         <label htmlFor="deviceName" className="block text-gray-700 font-semibold">Device Name:</label>
                         <input
@@ -77,16 +77,16 @@ const AddDeviceModal = ({ isOpen, onRequestClose }) => {
                             <div tabIndex={0} role="button" className="btn m-1">
                                 {selectedDeviceType ? selectedDeviceType : 'Choose'}
                             </div>
-                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 ">
                                 <li
                                     onClick={() => handleDeviceTypeSelect('Monitoring')}
-                                    className="hover:bg-blue-500 hover:text-white cursor-pointer label"
+                                    className="hover:bg-gray-500 hover:text-white cursor-pointer label"
                                 >
                                     Monitoring
                                 </li>
                                 <li
                                     onClick={() => handleDeviceTypeSelect('Camera')}
-                                    className="hover:bg-blue-500 hover:text-white cursor-pointer label"
+                                    className="hover:bg-gray-500 hover:text-white cursor-pointer label"
                                 >
                                     Camera
                                 </li>

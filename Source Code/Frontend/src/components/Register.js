@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 
 const Register = () => {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleRegister = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:3001/RegisterAdmin", {
+            const response = await fetch("http://localhost:3000/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -21,7 +22,7 @@ const Register = () => {
                 alert("Admin registered successfully");
                 window.location.reload(false);
             } else {
-                alert("Failed to register admin");
+                alert("Failed to register.");
                 // Handle the error scenario
             }
             window.location.href = "/";
@@ -35,13 +36,23 @@ const Register = () => {
         <div>
             <Navbar />
             <div className="hero h-screen bg-white">
-                <div className="hero-content flex-col lg:flex-row-reverse">
+                <div className="hero-content flex-col lg:flex-row-reverse text-white">
                     <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100 mt-1 p-2">
                         <form className="card-body" onSubmit={handleRegister}>
                             <h1 className="text-2xl font-bold">Register</h1>
-                            <div className="form-control">
+                            <div className="form-control text-white">
                                 <label className="label">
-                                    <span className="label-text">Email</span>
+                                    <span className="label-text text-white">Username</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    className="mt-1 p-2 w-full border rounded"
+                                    value={username} onChange={(event) => setUsername(event.target.value)} required />
+                            </div>
+                            <div className="form-control text-white">
+                                <label className="label">
+                                    <span className="label-text text-white">Email</span>
                                 </label>
                                 <input
                                     type="text"
@@ -49,9 +60,9 @@ const Register = () => {
                                     className="mt-1 p-2 w-full border rounded"
                                     value={email} onChange={(event) => setEmail(event.target.value)} required />
                             </div>
-                            <div className="form-control">
+                            <div className="form-control text-white">
                                 <label className="label">
-                                    <span className="label-text">Password</span>
+                                    <span className="label-text text-white">Password</span>
                                 </label>
                                 <input
                                     type="password"

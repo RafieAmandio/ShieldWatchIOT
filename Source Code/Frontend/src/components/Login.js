@@ -9,7 +9,7 @@ const Login = () => {
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:3000/Login", {
+            const response = await fetch("http://localhost:3000/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,11 +39,11 @@ const Login = () => {
             <div className="hero h-screen bg-white">
                 <div className="hero-content flex-col lg:flex-row-reverse">
                     <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                        <form className="card-body" onSubmit={handleLogin}>
-                            <h1 className="text-2xl font-bold">Login</h1>
-                            <div className="form-control">
+                        <form className="card-body text-white" onSubmit={handleLogin}>
+                            <h1 className="text-2xl font-bold ">Login</h1>
+                            <div className="form-control text-white">
                                 <label className="label">
-                                    <span className="label-text">Email</span>
+                                    <span className="label-text text-white">Email</span>
                                 </label>
                                 <input
                                     type="text"
@@ -51,9 +51,9 @@ const Login = () => {
                                     className="mt-1 p-2 w-full border rounded"
                                     value={email} onChange={(event) => setEmail(event.target.value)} required />
                             </div>
-                            <div className="form-control">
+                            <div className="form-control text-white">
                                 <label className="label">
-                                    <span className="label-text">Password</span>
+                                    <span className="label-text text-white">Password</span>
                                 </label>
                                 <input
                                     type="password"
