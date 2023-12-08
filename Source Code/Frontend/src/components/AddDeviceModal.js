@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { useForm } from 'react-hook-form';
 
@@ -15,12 +15,35 @@ const customStyles = {
     },
 };
 
-const AddDeviceModal = ({ isOpen, onRequestClose, onAddDevice }) => {
+const AddDeviceModal = ({ isOpen, onRequestClose }) => {
     const { register, handleSubmit } = useForm();
+    const [selectedDeviceType, setSelectedDeviceType] = useState('');
 
-    const onSubmit = (data) => {
-        onAddDevice(data);
-        onRequestClose();
+    const onSubmit = async (data) => {
+        const deviceData = { ...data, deviceType: selectedDeviceType };
+
+        try {
+            const response = await fetch('YOUR_BACKEND_ENDPOINT', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(deviceData),
+            });
+
+            if (response.ok) {
+                console.log('Device added successfully');
+                onRequestClose();
+            } else {
+                console.error('Failed to add device');
+            }
+        } catch (error) {
+            console.error('Error adding device:', error);
+        }
+    };
+
+    const handleDeviceTypeSelect = (deviceType) => {
+        setSelectedDeviceType(deviceType);
     };
 
     return (
@@ -39,19 +62,38 @@ const AddDeviceModal = ({ isOpen, onRequestClose, onAddDevice }) => {
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="deviceType" className="block text-gray-700 font-semibold">Device Type:</label>
+                        <label htmlFor="deviceID" className="block text-gray-700 font-semibold">Device ID:</label>
                         <input
                             type="text"
-                            id="deviceType"
-                            {...register('deviceType')}
+                            id="deviceID"
+                            {...register('deviceID')}
                             className="form-input mt-1 bg-white border-2 border-gray-400 block w-full text-black"
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        className="btn text-white w-full mt-4"
-                    >
+                    <div className="mb-4">
+                        <label htmlFor="deviceType" className="block text-gray-700 font-semibold">Device Type:</label>
+                        <div className="dropdown dropdown-right">
+                            <div tabIndex={0} role="button" className="btn m-1">
+                                {selectedDeviceType ? selectedDeviceType : 'Choose'}
+                            </div>
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li
+                                    onClick={() => handleDeviceTypeSelect('Monitoring')}
+                                    className="hover:bg-blue-500 hover:text-white cursor-pointer label"
+                                >
+                                    Monitoring
+                                </li>
+                                <li
+                                    onClick={() => handleDeviceTypeSelect('Camera')}
+                                    className="hover:bg-blue-500 hover:text-white cursor-pointer label"
+                                >
+                                    Camera
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="submit" className="btn text-white w-full mt-6">
                         Add Device
                     </button>
                 </form>
