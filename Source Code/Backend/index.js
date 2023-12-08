@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./src/config/db");
 const authRoutes = require("./src/routes/Auth.routes");
+const deviceRoutes = require("./src/routes/Device.routes");
 const { handleJsonMessage } = require("./src/services/Algh.services");
 const dotenv = require("dotenv");
 const app = express();
@@ -35,11 +36,11 @@ client.on("error", (err) => {
 
 client.on("message", (topic, message) => {
   console.log(`Received message on topic ${topic}`);
-
   handleJsonMessage(message);
 });
 
 app.use("/auth", authRoutes);
+app.use("/device", deviceRoutes);
 
 const port = process.env.PORT;
 app.listen(port, () => {

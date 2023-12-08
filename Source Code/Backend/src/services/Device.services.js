@@ -1,27 +1,30 @@
+const { User } = require("../models/user.model");
 
-const { User, userSchema} = require("../models/user.model")
+exports.getAllDevices = async (body) => {
+  const { userId } = body;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return { message: "Device Found", result: user.device };
+};
 
-exports.register = async (body) => {
-  console.log(body);
-  const userData = body;
+exports.addDevice = async (body) => {
+  const { userId, device_name, device_id, type } = body;
 
-  if (!userData.username || !userData.email || !userData.password) {
-    throw new Error("Missing required fields");
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
   }
 
-  try {
-    userData.password = await bcrypt.hash(userData.password, 10);
+  const newDevice = { device_name, device_id, type };
+  user.device.push(newDevice);
 
-    const result = new User({
-      username: userData.username,
-      email: userData.email,
-      password: userData.password,
-    });
-    await result.save();
+  await user.save();
 
-    return { message: "Sucesss Creating New User!", result: result };
-  } catch (error) {
-    console.error("Error creating user:", error);
-    throw new Error("Could not create user");
-  }
+  return {
+    message: "Device added successfully",
+    result: newDevice,
+  };
 };

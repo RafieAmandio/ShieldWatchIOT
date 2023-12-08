@@ -30,27 +30,20 @@ exports.login = async (body) => {
   try {
     const { email, password } = body;
 
-    // Check if email and password are provided
     if (!email || !password) {
       throw new Error("Email and password are required");
     }
     const user = await User.findOne({ email });
 
-    // Check if the user exists
     if (!user) {
       throw new Error("Invalid email or password");
     }
 
-    // Compare the provided password with the hashed password in the database
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
       throw new Error("Invalid email or password");
     }
-
-    // Passwords match, user is authenticated
-    // Here you can generate a JWT token and send it back to the client
-    // For simplicity, I'm just sending a success message for now
     return { message: "Login successful", result: user };
   } catch (error) {
     console.error("Error during login:", error);
