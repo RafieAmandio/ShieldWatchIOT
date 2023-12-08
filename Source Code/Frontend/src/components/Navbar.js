@@ -16,12 +16,12 @@ const Navbar = () => {
                             <summary className="label text-black font-semibold">Account</summary>
                             <ul className="p-2 bg-base-100 rounded-t-none">
                                 <li>
-                                    <Link to="/login" className="label link-hover">
+                                    <Link to="/login" className="label">
                                         Login
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/register" className="label link-hover">
+                                    <Link to="/register" className="label">
                                         Register
                                     </Link>
                                 </li>

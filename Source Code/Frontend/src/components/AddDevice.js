@@ -22,7 +22,7 @@ const AddDevice = () => {
         <div className="p-8">
             <button
                 onClick={openAddDeviceModal}
-                className="inline-flex items-center cursor-pointer rounded-md bg-gray-800 px-4 py-3 text-center text-sm font-semibold text-white transition duration-200 ease-in-out hover:bg-gray-900"
+                className="inline-flex items-center cursor-pointer rounded-md bg-black px-4 py-3 text-center text-sm font-semibold text-white transition duration-200 ease-in-out hover:bg-gray-900"
             >
                 <PlusIcon className="h-6 w-6 mr-2" />
                 Add Device

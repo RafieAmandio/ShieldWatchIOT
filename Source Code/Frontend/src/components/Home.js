@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PlusIcon } from '@heroicons/react/solid'; // Import PlusIcon from Heroicons
+import { PlusIcon } from '@heroicons/react/solid';
 import Sensor from './Sensor';
 import AddDeviceModal from './AddDeviceModal';
 
@@ -15,7 +15,7 @@ const Home = ({ pirValue, temperatureValue, lightIntensityValue }) => {
     };
 
     const handleAddDevice = (deviceData) => {
-        // Logika penambahan perangkat di sini
+        // Logic for adding the device goes here
         console.log('Adding device:', deviceData);
     };
 
@@ -30,12 +30,11 @@ const Home = ({ pirValue, temperatureValue, lightIntensityValue }) => {
                 Add Device
             </button>
 
+            <Sensor key="pir" type="PIR" value={pirValue} />
+            <Sensor key="temperature" type="Temperature" value={temperatureValue} />
+            <Sensor key="lightIntensity" type="Light Intensity" value={lightIntensityValue} />
 
-            <Sensor type="PIR" value={pirValue} />
-            <Sensor type="Temperature" value={temperatureValue} />
-            <Sensor type="Light Intensity" value={lightIntensityValue} />
-
-            {/* Add other components related to yo  ur ESP32 and camera here */}
+            {/* Add other components related to your ESP32 and camera here */}
 
             <AddDeviceModal
                 isOpen={isAddDeviceModalOpen}
@@ -43,7 +42,7 @@ const Home = ({ pirValue, temperatureValue, lightIntensityValue }) => {
                 onAddDevice={handleAddDevice}
                 className="transition duration-200 ease-in-out transform scale-100"
             >
-                {/* Konten modal di sini */}
+                {/* Modal content goes here */}
             </AddDeviceModal>
 
         </div>

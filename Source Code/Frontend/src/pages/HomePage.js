@@ -7,6 +7,7 @@ const HomePage = () => {
     const [pirValue, setPirValue] = useState(false);
     const [temperatureValue, setTemperatureValue] = useState(0);
     const [lightIntensityValue, setLightIntensityValue] = useState(0);
+    const [cameraValue, setCamera] = useState('');
 
     useEffect(() => {
         const client = mqtt.connect('mqtt://broker.mqttdashboard.com');
@@ -21,11 +22,12 @@ const HomePage = () => {
         });
 
         client.on('message', (topic, message) => {
-            // Assuming data format: { pir: boolean, temperature: number, lightIntensity: number }
+            // Assuming data format: { pir: boolean, temperature: number, lightIntensity: number, camera: string }
             const data = JSON.parse(message.toString());
             setPirValue(data.pir);
             setTemperatureValue(data.temperature);
             setLightIntensityValue(data.lightIntensity);
+            setCamera(data.camera);
         });
 
         // Cleanup the MQTT client on component unmount
@@ -52,7 +54,7 @@ const HomePage = () => {
                         <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
                             {stats.map((stat) => (
                                 <div key={stat.id} className="mx-auto flex max-w-xs flex-col gap-y-4">
-                                    <dt className="text-base leading-7 text-gray-600">{stat.name}</dt>
+                                    <dt className="text-base leading-7 text-gray-600 font-medium">{stat.name}</dt>
                                     <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                                         {stat.value}
                                     </dd>
@@ -63,7 +65,9 @@ const HomePage = () => {
                             <div className="card-body">
                                 <h2 className="card-title text-5xl text-black">Camera</h2>
                             </div>
-                            <figure><img src="https://zonacctv.com/wp-content/uploads/2017/07/IMG-20170520-WA0036.jpg" alt="Camera" /></figure>
+                            <figure>
+                                <img src=/*{cameraValue}*/ "https://media.suara.com/pictures/970x544/2022/11/17/50471-dinosaurus-di-kota-depok.jpg" alt="Camera" />
+                            </figure>
                         </div>
                     </div>
                 </div>
