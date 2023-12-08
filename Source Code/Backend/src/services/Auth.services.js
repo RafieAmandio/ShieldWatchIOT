@@ -50,3 +50,30 @@ exports.login = async (body) => {
     throw new Error("Internal Server Error");
   }
 };
+
+exports.addPhoto = async (req) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (req.file) {
+      // If a file is uploaded, update the file_path field in the user model
+      user.file_path = req.file.path;
+
+      // Save the updated user model
+      await user.save();
+
+      return { message: "File uploaded successfully", result: user };
+    } else {
+      throw new Error("No file uploaded");
+    }
+  } catch (error) {
+    console.error("Error adding photo:", error.message);
+    throw new Error("Internal Server Error");
+  }
+};
