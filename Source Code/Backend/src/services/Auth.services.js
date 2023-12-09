@@ -10,7 +10,7 @@ exports.register = async (req) => {
   }
 
   try {
-    userData.file_path = req.file.path;
+    userData.file_path = "./profile/" + req.file.filename;
     userData.password = await bcrypt.hash(userData.password, 10);
 
     const result = new User({
