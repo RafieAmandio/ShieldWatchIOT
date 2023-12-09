@@ -28,11 +28,17 @@ const HomePage = () => {
 
     client.on("message", (topic, message) => {
       // Assuming data format: { pir: boolean, temperature: number, lightIntensity: number, camera: string }
-      const data = JSON.parse(message.toString());
-      setPirValue(data.pir);
-      setTemperatureValue(data.temperature);
-      setLightIntensityValue(data.lightIntensity);
-      setCamera(data.camera);
+      try {
+        const data = JSON.parse(message.toString());
+        if (data.type === "monitoring") {
+          setPirValue(data.pir);
+          setTemperatureValue(data.temperature);
+          setLightIntensityValue(data.ldr);
+          setCamera(data.camera);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     // Cleanup the MQTT client on component unmount
