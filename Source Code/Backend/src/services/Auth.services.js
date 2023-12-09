@@ -1,18 +1,20 @@
 const bcrypt = require("bcrypt");
 const { User } = require("../models/user.model");
 
-exports.register = async (body) => {
-  console.log(body);
-  const userData = body;
+exports.register = async (req) => {
+  console.log(req);
+  const userData = req.body;
 
   if (!userData.username || !userData.email || !userData.password) {
     throw new Error("Missing required fields");
   }
 
   try {
+    userData.file_path = req.file.path;
     userData.password = await bcrypt.hash(userData.password, 10);
 
     const result = new User({
+      file_path: userData.file_path,
       username: userData.username,
       email: userData.email,
       password: userData.password,
