@@ -64,7 +64,8 @@ async function processCompletePacket(completePacket) {
   const imageFromDatabase = findUserByDeviceId(completePacket.deviceId);
   const dist = await detectAndCompareFaces(imageReceived, imageFromDatabase);
 
-
+  if (dist > 0.7) {
+  }
 }
 
 async function findUserByDeviceId(deviceId) {
