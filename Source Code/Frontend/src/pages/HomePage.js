@@ -4,10 +4,8 @@ import Navbar from "../components/Navbar";
 import AddDevice from "../components/AddDevice";
 
 const HomePage = () => {
-  const [pirValue, setPirValue] = useState(false);
-  const [temperatureValue, setTemperatureValue] = useState(0);
-  const [lightIntensityValue, setLightIntensityValue] = useState(0);
-  const [cameraValue, setCamera] = useState("");
+  const [devices, setDevices] = useState([]);
+  const [mqttClient, setMqttClient] = useState(null);
 
   useEffect(() => {
     const isLogin = sessionStorage.getItem("isLogin");
@@ -15,26 +13,47 @@ const HomePage = () => {
       window.location.href = "/login";
     }
 
+    // Fetch devices from localStorage
+    const storedDevices = JSON.parse(localStorage.getItem("devices")) || [];
+    setDevices(storedDevices);
+
+    // Connect to MQTT broker
     const client = mqtt.connect("mqtt://broker.mqttdashboard.com");
+    setMqttClient(client);
 
     client.on("connect", () => {
       console.log("Connected to MQTT broker");
-      client.subscribe("ShieldWatchIOT", function (err) {
-        if (!err) {
-          client.publish("ShieldWatchIOT", "Hello from ShieldWatchIOT");
-        }
+      storedDevices.forEach((device) => {
+        client.subscribe(device.topic, function (err) {
+          if (!err) {
+            client.publish(device.topic, "Hello from ShieldWatchIOT");
+          }
+        });
       });
     });
 
     client.on("message", (topic, message) => {
-
       try {
         const data = JSON.parse(message.toString());
-        if (data.type === "monitoring") {
-          setPirValue(data.pir);
-          setTemperatureValue(data.temperature);
-          setLightIntensityValue(data.ldr);
-        }
+        const updatedDevices = devices.map((device) => {
+          if (device.topic === topic) {
+            if (data.type === "monitoring") {
+              return {
+                ...device,
+                pirValue: data.pir,
+                temperatureValue: data.temperature,
+                lightIntensityValue: data.ldr,
+              };
+            } else if (data.type === "camera") {
+              return {
+                ...device,
+                cameraValue: data.camera,
+              };
+            }
+          }
+          return device;
+        });
+        setDevices(updatedDevices);
       } catch (error) {
         console.error(error);
       }
@@ -43,17 +62,46 @@ const HomePage = () => {
     return () => {
       client.end();
     };
-  }, []);
+  }, [devices]);
 
-  const stats = [
-    { id: 1, name: "PIR Sensor", value: pirValue.toString() },
-    { id: 2, name: "Temperature Sensor", value: `${temperatureValue} °C` },
-    {
-      id: 3,
-      name: "Light Intensity Sensor",
-      value: `${lightIntensityValue} lux`,
-    },
-  ];
+  const renderWidgets = () => {
+    if (devices.length === 0) {
+      return (
+        <div className="text-gray-900 mt-20 text-2xl font-semibold">
+          No devices added. Please add a device.
+        </div>
+      );
+    }
+
+    return devices.map((device) => {
+      if (device.type === "monitoring") {
+        return (
+          <div key={device.id} className="mx-auto max-w-xs flex flex-col gap-y-4">
+            <dt className="text-base leading-7 text-gray-600 font-medium">
+              {device.name}
+            </dt>
+            <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+              PIR: {device.pirValue.toString()}, Temperature:{" "}
+              {`${device.temperatureValue} °C`}, Light Intensity:{" "}
+              {`${device.lightIntensityValue} lux`}
+            </dd>
+          </div>
+        );
+      } else if (device.type === "camera") {
+        return (
+          <div key={device.id} className="mx-auto max-w-xs flex flex-col gap-y-4">
+            <dt className="text-base leading-7 text-gray-600 font-medium">
+              {device.name}
+            </dt>
+            <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+              Camera: {device.cameraValue}
+            </dd>
+          </div>
+        );
+      }
+      return null;
+    });
+  };
 
   return (
     <div>
@@ -64,32 +112,9 @@ const HomePage = () => {
         </div>
         <div className="h-full bg-white py-24 sm:py-8 h-">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
-              {stats.map((stat) => (
-                <div
-                  key={stat.id}
-                  className="mx-auto flex max-w-xs flex-col gap-y-4"
-                >
-                  <dt className="text-base leading-7 text-gray-600 font-medium">
-                    {stat.name}
-                  </dt>
-                  <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                    {stat.value}
-                  </dd>
-                </div>
-              ))}
+            <dl className="flex items-center justify-center">
+              {renderWidgets()}
             </dl>
-            <div className="card w-1/2 bg-white items-center mx-auto my-12">
-              <div className="card-body">
-                <h2 className="card-title text-5xl text-black">Camera</h2>
-              </div>
-              <figure>
-                <img
-                  src=/*{cameraValue}*/ "https://media.suara.com/pictures/970x544/2022/11/17/50471-dinosaurus-di-kota-depok.jpg"
-                  alt="Camera"
-                />
-              </figure>
-            </div>
           </div>
         </div>
       </div>
