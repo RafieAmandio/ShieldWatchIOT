@@ -40,6 +40,7 @@ These features collectively form the core functionalities of the system, providi
 ### Camera Module 📷
 
 The Camera Module, a crucial component of the smart home security system, integrates the ESP32 CAM and PIR sensor to enable efficient intruder detection and image capture.
+![image](https://github.com/RafieAmandio/ShieldWatchIOT/assets/88525718/dd832a78-a63f-4f83-86e3-e26dfb2719d1)
 
 #### Components:
 - **ESP32 CAM:** Handles image capture and communication with the backend.
@@ -53,6 +54,7 @@ The Camera Module, a crucial component of the smart home security system, integr
 
 ### Monitoring Module 🏡
 The Monitoring Module focuses on providing users with real-time data regarding their home environment. It incorporates an ESP32 microcontroller, DHT11, LDR sensor, buzzer, and lamp for comprehensive monitoring.
+![image](https://github.com/RafieAmandio/ShieldWatchIOT/assets/88525718/bf6fd379-0f44-4dc9-b8d0-02013e0c306c)
 
 #### Components:
 - **ESP32 Microcontroller:** Serves as the central control unit for the Monitoring Module.
@@ -71,6 +73,7 @@ These hardware design and implementation details highlight the functionalities o
 
 ## Network infrastructure 🌐
 
+<img width="1994" alt="Network_Diagram" src="https://github.com/RafieAmandio/ShieldWatchIOT/assets/88525718/c9b84ea3-2396-447d-a7f9-d86fd46fc8e9">
 
 In the architecture of our smart home security and automation system, the integration of software and hardware components is seamlessly achieved through the utilization of the HiveMQ MQTT broker and REST API. Acting as a central communication hub, the MQTT broker facilitates real-time data exchange among IoT devices, including the ESP32 CAM and ESP32 microcontroller, ensuring decentralized yet efficient interactions. On the software side, the REST API serves as the bridge between the frontend and backend, enabling user-centric functionalities such as authentication, registration, and device management. This RESTful architecture ensures standardized and stateless communication, fostering interoperability and user-friendly interactions. The synergy between the MQTT broker and REST API forms a cohesive and responsive system, where devices communicate swiftly, and users have seamless control over their smart home environment. This integrated approach not only enhances reliability and responsiveness but also provides a scalable foundation for future feature enhancements and adaptations to evolving smart home requirements.
 
@@ -104,6 +107,8 @@ The integration of TensorFlow.js elevates the security aspect by enabling facial
 The TensorFlow.js-powered facial comparison module allows the backend to discern intruders by matching faces captured by the system with those stored in the database. This process ensures the system's ability to accurately identify and respond to potential security threats. The backend seamlessly connects with the database, establishing a secure link for quick retrieval and comparison of facial data.
 
 ### Database Design 🗃️
+
+<img width="1152" alt="Database Design" src="https://github.com/RafieAmandio/ShieldWatchIOT/assets/88525718/f1533734-abe5-4474-9a8d-a3e3355f8670">
 
 The project's database relies on MongoDB, a NoSQL solution chosen for its scalability and flexibility. The database comprises two essential collections: User and Device.
 
