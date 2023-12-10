@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./src/config/db");
 const authRoutes = require("./src/routes/Auth.routes");
-const { handleJsonMessage } = require("./src/services/Algh.services");
+const deviceRoutes = require("./src/routes/Device.routes");
+const { handleJsonMessage } = require("./src/utils/mqtt.utils");
 const dotenv = require("dotenv");
 const app = express();
 const mqtt = require("mqtt");
@@ -17,7 +18,7 @@ app.use(cors());
 const brokerUrl = "mqtt://broker.mqttdashboard.com";
 
 const client = mqtt.connect(brokerUrl, {
-  clientId: "BackendServer",
+  clientId: "BackendServer2",
 });
 
 client.on("connect", () => {
@@ -35,11 +36,11 @@ client.on("error", (err) => {
 
 client.on("message", (topic, message) => {
   console.log(`Received message on topic ${topic}`);
-
   handleJsonMessage(message);
 });
 
 app.use("/auth", authRoutes);
+app.use("/device", deviceRoutes);
 
 const port = process.env.PORT;
 app.listen(port, () => {
