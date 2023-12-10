@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import AddDevice from "../components/AddDevice";
 
 const HomePage = () => {
-  const [pirValue, setPirValue] = useState(false);
+  const [humidityValue, setHumidityValue] = useState(0);
   const [temperatureValue, setTemperatureValue] = useState(0);
   const [lightIntensityValue, setLightIntensityValue] = useState(0);
   const [cameraValue, setCamera] = useState("");
@@ -27,11 +27,10 @@ const HomePage = () => {
     });
 
     client.on("message", (topic, message) => {
-
       try {
         const data = JSON.parse(message.toString());
         if (data.type === "monitoring") {
-          setPirValue(data.pir);
+          setHumidityValue(data.humidity); // Change to humidity
           setTemperatureValue(data.temperature);
           setLightIntensityValue(data.ldr);
         }
@@ -46,7 +45,7 @@ const HomePage = () => {
   }, []);
 
   const stats = [
-    { id: 1, name: "PIR Sensor", value: pirValue.toString() },
+    { id: 1, name: "Humidity Sensor", value: `${humidityValue}%` },
     { id: 2, name: "Temperature Sensor", value: `${temperatureValue} °C` },
     {
       id: 3,
@@ -79,17 +78,6 @@ const HomePage = () => {
                 </div>
               ))}
             </dl>
-            <div className="card w-1/2 bg-white items-center mx-auto my-12">
-              <div className="card-body">
-                <h2 className="card-title text-5xl text-black">Camera</h2>
-              </div>
-              <figure>
-                <img
-                  src=/*{cameraValue}*/ "https://media.suara.com/pictures/970x544/2022/11/17/50471-dinosaurus-di-kota-depok.jpg"
-                  alt="Camera"
-                />
-              </figure>
-            </div>
           </div>
         </div>
       </div>
