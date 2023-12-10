@@ -57,24 +57,26 @@ async function load(url) {
 }
 
 exports.sendEmail = async function sendEmail(toEmail) {
+  const transporter = createTransport({
+    host: "smtp-relay.brevo.com",
+    port: 587,
+    auth: {
+      user: "rafieamandio@gmail.com",
+      pass: "EBR4mdYO6sgCNkay",
+    },
+  });
+  console.log("here");
+  console.log(toEmail);
   await transporter.sendMail({
     from: "info@smarthomeguardian.com",
     to: toEmail,
     subject: "There is Someone Outside",
     html: `
-      Testing
-      `,
+    Test
+  `,
   });
+  console.log("Sent");
 };
-
-const transporter = createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  auth: {
-    user: "rafieamandio@gmail.com",
-    pass: "EBR4mdYO6sgCNkay",
-  },
-});
 
 function convertBase64ToImage(clientId, base64String) {
   // Generate a unique filename

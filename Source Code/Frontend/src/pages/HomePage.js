@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import mqtt from "mqtt";
 import Navbar from "../components/Navbar";
 import AddDevice from "../components/AddDevice";
+import axios from "axios";
 
 const HomePage = () => {
   const [devices, setDevices] = useState([]);
@@ -14,55 +15,78 @@ const HomePage = () => {
     }
 
     // Fetch devices from localStorage
-    const storedDevices = JSON.parse(localStorage.getItem("devices")) || [];
-    setDevices(storedDevices);
+    const storedDevices = JSON.parse(localStorage.getItem("user")) || [];
+    setDevices(storedDevices.device);
 
-    // Connect to MQTT broker
-    const client = mqtt.connect("mqtt://broker.mqttdashboard.com");
-    setMqttClient(client);
+    // Fetch monitoring data every 5 seconds
+    const fetchDataInterval = setInterval(() => {
+      fetchMonitoringData();
+    }, 5000);
 
-    client.on("connect", () => {
-      console.log("Connected to MQTT broker");
-      storedDevices.forEach((device) => {
-        client.subscribe(device.topic, function (err) {
-          if (!err) {
-            client.publish(device.topic, "Hello from ShieldWatchIOT");
-          }
-        });
+    // Clean up interval on component unmount
+    return () => clearInterval(fetchDataInterval);
+  }, []);
+
+  const handleSendWarning = async (deviceId) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user")) || [];
+      // Replace 'your-backend-api-url' with the actual URL of your backend API endpoint
+      const response = await axios.post("http://localhost:9696/send-warning", {
+        device_id: deviceId,
+        warningMessage: "Intruder Alert",
+        email: user.email // You can customize the warning message here
       });
-    });
 
-    client.on("message", (topic, message) => {
-      try {
-        const data = JSON.parse(message.toString());
-        const updatedDevices = devices.map((device) => {
-          if (device.topic === topic) {
-            if (data.type === "monitoring") {
-              return {
-                ...device,
-                pirValue: data.pir,
-                temperatureValue: data.temperature,
-                lightIntensityValue: data.ldr,
-              };
-            } else if (data.type === "camera") {
-              return {
-                ...device,
-                cameraValue: data.camera,
-              };
+      console.log(response.data); // Log the response from the server
+    } catch (error) {
+      console.error("Error sending warning:", error);
+    }
+  };
+
+  const fetchMonitoringData = async () => {
+    try {
+      console.log("test");
+      // Replace 'your-backend-api-url' with the actual URL of your backend API endpoint
+      const devicesPromises = devices.map(async (device) => {
+        try {
+          const response = await axios.post(
+            "http://localhost:9696/device/latest",
+            {
+              device_id: device.device_id,
             }
-          }
-          return device;
-        });
-        setDevices(updatedDevices);
-      } catch (error) {
-        console.error(error);
-      }
-    });
+          );
+          console.log(response);
 
-    return () => {
-      client.end();
-    };
-  }, [devices]);
+          const updatedMonitoringData = response.data;
+
+          // Update the state based on device_id
+          setDevices((prevDevices) =>
+            prevDevices.map((prevDevice) => {
+              if (prevDevice.device_id === updatedMonitoringData.device_id) {
+                return {
+                  ...prevDevice,
+                  ldr: updatedMonitoringData.ldr,
+                  temperature: updatedMonitoringData.temperature,
+                  humidity: updatedMonitoringData.humidity,
+                };
+              }
+              return prevDevice;
+            })
+          );
+        } catch (error) {
+          console.error(
+            `Error fetching monitoring data for device ${device.device_id}:`,
+            error
+          );
+        }
+      });
+
+      await Promise.all(devicesPromises);
+      console.log(devicesPromises);
+    } catch (error) {
+      console.error("Error fetching monitoring data for all devices:", error);
+    }
+  };
 
   const renderWidgets = () => {
     if (devices.length === 0) {
@@ -74,28 +98,40 @@ const HomePage = () => {
     }
 
     return devices.map((device) => {
-      if (device.type === "monitoring") {
+      if (device.type === "MONITORING") {
         return (
-          <div key={device.id} className="mx-auto max-w-xs flex flex-col gap-y-4">
-            <dt className="text-base leading-7 text-gray-600 font-medium">
-              {device.name}
-            </dt>
-            <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-              PIR: {device.pirValue.toString()}, Temperature:{" "}
-              {`${device.temperatureValue} °C`}, Light Intensity:{" "}
-              {`${device.lightIntensityValue} lux`}
-            </dd>
+          <div className="indicator m-3">
+            <span className="indicator-item badge badge-success mr-1"></span>
+            <div className="card w-96 bg-primary text-primary-content ">
+              <div className="card-body">
+                <h2 className="card-title text-white">{device.device_name}</h2>
+                {/* Humidity */}
+                <p>Humidity: {device.humidity}%</p>
+
+                {/* Temperature */}
+                <p>Temperature: {device.temperature}°C</p>
+
+                {/* Light Intensity */}
+                <p>Light Intensity: {device.ldr} lux</p>
+              </div>
+            </div>
           </div>
         );
-      } else if (device.type === "camera") {
+      } else if (device.type === "CAMERA") {
         return (
-          <div key={device.id} className="mx-auto max-w-xs flex flex-col gap-y-4">
-            <dt className="text-base leading-7 text-gray-600 font-medium">
-              {device.name}
-            </dt>
-            <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-              Camera: {device.cameraValue}
-            </dd>
+          <div className="indicator m-3">
+            <span className="indicator-item badge badge-success mr-1"></span>
+            <div className="card w-96 bg-primary text-primary-content ">
+              <div className="card-body">
+                <h2 className="card-title text-white">{device.device_name}</h2>
+                <button
+                  className="btn btn-warning"
+                  onClick={() => handleSendWarning(device.device_id)}
+                >
+                  Send Warning
+                </button>
+              </div>
+            </div>
           </div>
         );
       }
