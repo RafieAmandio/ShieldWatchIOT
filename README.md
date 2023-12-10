@@ -1,4 +1,4 @@
-
+![ShieldWatch](https://github.com/RafieAmandio/ShieldWatchIOT/assets/88525718/c70b3c1b-4fad-4786-8f7d-a40f3ae0bf2b)
 # ShieldWatch : Smart Home Guardian 🏡🔒 
 
 ShieldWatch : Smart Home Guardian is an intelligent home security and automation system that combines cutting-edge technology to provide a comprehensive solution for your home. This project features Intruder Detection with PIR sensors for image capture and notifications, Home Monitoring for environmental data display, and Smart Home Automation for lights control.
